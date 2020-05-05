@@ -1,9 +1,10 @@
 import Visual from './visual.js';
 
-visual = new Visual();
+const visual = new Visual();
 
 function setup()    {
     visual.setup();
+    visual.loadObject();
 }
 
 function update()   {
@@ -11,6 +12,7 @@ function update()   {
 };
 
 function draw() {
+    update();
     requestAnimationFrame(draw);
 
     visual.draw();
@@ -19,6 +21,10 @@ function draw() {
 function main() {
     setup();
     draw();
+}
+
+function onWindowResize() {
+    visual.onWindowResize();
 }
 
 document.addEventListener("DOMContentLoaded", main);
