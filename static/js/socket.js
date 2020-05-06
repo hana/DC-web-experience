@@ -2,13 +2,14 @@
 
 
 let socket
-const Server_Address = 'http://qux-jp.com:53000';
+const Server_Address = 'http://hana.qux-jp.com:53000';
 
 export default class Socket {
     constructor()   {}
 
     setup() {
-        socket = io(Server_Address);
+        //socket = io(Server_Address);
+        socket = io();
         socket.on('connect', () => {
             console.log("Connection established");
             // socket.id;

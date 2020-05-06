@@ -3,8 +3,8 @@ const express = require('express');
 const app = express();
 
 const ssl_params = {
-    key:fs.readFileSync('ssl/key,pem', 'utf8'),
-    cert:fs.readFileSync('ssl/crt,pem', 'utf8')
+    key:fs.readFileSync('ssl/key.pem', 'utf8'),
+    cert:fs.readFileSync('ssl/cert.pem', 'utf8')
 }
 
 const server = require('https').createServer(ssl_params, app);
