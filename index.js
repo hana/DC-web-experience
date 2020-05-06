@@ -1,20 +1,33 @@
+require('dotenv').config();
+
 const fs = require('fs');
 const express = require('express');
 const app = express();
 
-const ssl_params = {
-    key:fs.readFileSync('ssl/key.pem', 'utf8'),
-    cert:fs.readFileSync('ssl/cert.pem', 'utf8')
+
+
+let server;
+
+if(process.env.TARGET_ENV === 'production') {
+    const ssl_params = {
+        key:fs.readFileSync('ssl/key.pem', 'utf8'),
+        cert:fs.readFileSync('ssl/cert.pem', 'utf8')
+    }
+    server = require('https').createServer(ssl_params, app);
+} else {
+    server = require('http').createServer(app);
 }
 
-const server = require('https').createServer(ssl_params, app);
 const io = require('socket.io')(server);
+app.use(express.static('static'));
+
+const helmet = require('helmet');
+app.use(helmet());
 
 app.get("/", (req, res) => {
     res.sendFile(__dirname + '/views/index.html');
 });
 
-app.use(express.static('static'));
 const Listen_Port = 53000;
 const users = {}; 
 
@@ -69,7 +82,7 @@ io.on('connection', (socket) => {
     })
 })
 
-server.listen(53000, () => {
-    console.log("Listening on 53000");
+server.listen(Listen_Port, () => {
+    console.log(`Listening on ${Listen_Port}`);
 });
 
