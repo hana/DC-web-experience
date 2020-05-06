@@ -7,6 +7,8 @@ app.get("/", (req, res) => {
     res.sendFile(__dirname + '/views/index.html');
 });
 
+
+const Listen_Port = 53000;
 const users = {}; 
 
 io.on('connection', (socket) => {
@@ -60,7 +62,7 @@ io.on('connection', (socket) => {
     })
 })
 
-server.listen(3000, () => {
+server.listen(53000, () => {
     console.log("Listening on 3000");
 });
 
