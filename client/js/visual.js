@@ -7,6 +7,8 @@ import { MTLLoader } from "./three/examples/jsm/loaders/MTLLoader.js";
 import { OBJLoader2 } from "./three/examples/jsm/loaders/OBJLoader2.js";
 import { MtlObjBridge } from "./three/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js";
 
+import Shape from './shape.js';
+
 const modelName = "cooperHewitt"
 const Path_To_OBJ = './src/cooperHewitt.obj';
 const Path_To_MTL = './src/cooperHewitt.mtl';
@@ -17,12 +19,16 @@ let prevTime = performance.now();
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 
+let onMove = null;
+
 const move = {
     forward:false,
     backward:false,
     left:false,
     right:false
 }
+
+const others = {};
 
 
 export default class Visual {
@@ -41,7 +47,7 @@ export default class Visual {
         renderer = new THREE.WebGLRenderer({
             antialias:false,
         });
-        renderer.setClearColor(0xAAA);
+        renderer.setClearColor(0xAAAAAA);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
@@ -115,25 +121,31 @@ export default class Visual {
         this.lights.add(light);
 
         scene.add(this.lights);
+
+
+        // setInterval(() => {console.log(scene)}, 3000);
     }
 
     loadObject() {
-        const objLoader2 = new OBJLoader2();
-    
-        const callbackOnLoad = ( object3d ) => {
-            scene.add( object3d );        
-            console.log("done");
-            console.log(object3d);
-        };
-    
-        const onLoadMtl = ( mtlParseResult ) =>{
-            objLoader2.setModelName( modelName );
-            objLoader2.setLogging( true, true );
-            objLoader2.addMaterials( MtlObjBridge.addMaterialsFromMtlLoader( mtlParseResult ), true );
-            objLoader2.load(Path_To_OBJ, callbackOnLoad, null, null, null );
-        };
-        const mtlLoader = new MTLLoader();
-        mtlLoader.load( Path_To_MTL, onLoadMtl );
+        return new Promise((resolve) =>{
+            const objLoader2 = new OBJLoader2();
+        
+            const callbackOnLoad = ( object3d ) => {
+                scene.add( object3d );        
+                console.log("Object loaded.");
+                resolve();
+            };
+        
+            const onLoadMtl = ( mtlParseResult ) =>{
+                objLoader2.setModelName( modelName );
+                // objLoader2.setLogging( true, true );
+                objLoader2.addMaterials( MtlObjBridge.addMaterialsFromMtlLoader( mtlParseResult ), true );
+                objLoader2.load(Path_To_OBJ, callbackOnLoad, null, null, null );
+            };
+            const mtlLoader = new MTLLoader();
+            mtlLoader.load( Path_To_MTL, onLoadMtl );
+        })
+
     }
 
     update(){
@@ -169,5 +181,41 @@ export default class Visual {
 
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
+
+    getUserPosition()   {
+        return camera.position;
+    }
+
+    getUserRotation()   {
+        return camera.rotation;
+    }
+
+    addOtherUser(id)    {
+        others[id] = new Shape();
+        scene.add(others[id].getObject());
+    }
+
+    deleteOtherUser(id) {
+        if(others[id])  {
+            scene.remove(others[id].getObject());
+            delete others[id];
+        }
+
+    }
+
+    setOtherUserPosition(id, x, y, z)    {
+        if(others[id])  {
+            others[id].setPosition(x, y, z);
+        }
+    }
+
+    setOtherUserRotation(id, x, y, z)  {
+        if(others[id])  {
+            others[id].setRotation(x, y, z);
+        }
+        
+    }
+
+
 }
 
