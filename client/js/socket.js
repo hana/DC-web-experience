@@ -2,7 +2,7 @@
 
 
 let socket
-const Server_Address = 'http://192.168.100.2:3000';
+const Server_Address = 'http://qux-jp.com:53000';
 
 export default class Socket {
     constructor()   {}
