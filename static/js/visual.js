@@ -6,6 +6,7 @@ import { PointerLockControls } from "./three/examples/jsm/controls/PointerLockCo
 import { MTLLoader } from "./three/examples/jsm/loaders/MTLLoader.js";
 import { OBJLoader2 } from "./three/examples/jsm/loaders/OBJLoader2.js";
 import { MtlObjBridge } from "./three/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js";
+import {GLTFLoader} from "./three/examples/jsm/loaders/GLTFLoader.js";
 
 import Shape from './shape.js';
 
@@ -38,7 +39,7 @@ export default class Visual {
         scene = new THREE.Scene();
         
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.set(0, 50, -100);
+        camera.position.set(0, 100, 250);
         camera.rotation.y = -Math.PI * 0.5;
         camera.zoom = 1.0;
 
@@ -131,6 +132,12 @@ export default class Visual {
             const objLoader2 = new OBJLoader2();
         
             const callbackOnLoad = ( object3d ) => {
+            
+                // object3d.traverse( function( node ) {
+                //     if( node.material ) {
+                //         node.material.side = THREE.DoubleSide;
+                //     }
+                // });
                 scene.add( object3d );        
                 console.log("Object loaded.");
                 resolve();
@@ -145,7 +152,6 @@ export default class Visual {
             const mtlLoader = new MTLLoader();
             mtlLoader.load( Path_To_MTL, onLoadMtl );
         })
-
     }
 
     update(){
@@ -173,6 +179,7 @@ export default class Visual {
 
     draw(){
         renderer.render(scene, camera);
+        console.log(camera.position);
     };
 
     onWindowResize() {
