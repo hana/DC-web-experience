@@ -230,6 +230,18 @@ export default class Visual {
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    init(args) {
+        
+        for(let key in args)   {
+            const user = args[key];
+            console.log(user.position);
+            others[user.id] = new Shape();
+            others[user.id].setPosition(user.position.x, user.position.y, user.position.z);
+            others[user.id].setRotation(user.rotation.x, user.rotation.y, user.rotation.z);
+            scene.add(others[user.id].getObject());
+        }
+    }
+
     getUserPosition()   {
         return camera.position;
     }

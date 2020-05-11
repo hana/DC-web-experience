@@ -22,6 +22,12 @@ export default class Shape  {
         const div = 16;
         const length = 2;
 
+        const pos = {
+            x:5,
+            y:5,
+            z: -(10 + length * 0.5)
+        };
+
         this.left_eye = new  THREE.Mesh(
             new THREE.CylinderGeometry( rad, rad, length, div ),
             new THREE.MeshLambertMaterial({
@@ -29,7 +35,7 @@ export default class Shape  {
             }),
         );
         this.left_eye.rotateX(Math.PI * 0.5);
-        this.left_eye.position.set(5, 5, 10 + length * 0.5);
+        this.left_eye.position.set(pos.x, pos.y, pos.z);
 
         this.right_eye = new THREE.Mesh( 
             new THREE.CylinderGeometry( rad, rad, length, div ),
@@ -38,10 +44,11 @@ export default class Shape  {
             }),
         );
         this.right_eye.rotateX(Math.PI * 0.5);
-        this.right_eye.position.set(-5, 5, 10 + length * 0.5);
+        this.right_eye.position.set(-pos.x, pos.y, pos.z);
 
         this.group.add(this.left_eye);
         this.group.add(this.right_eye);
+        this.group.position.set(0, 70, 250);
     }
 
     getObject() {

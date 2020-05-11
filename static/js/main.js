@@ -4,11 +4,18 @@ import Socket from './socket.js'
 const visual = new Visual();
 const socket = new Socket();
 
+let timer;
+
 async function setup()    {
+    
     visual.setup();
     await visual.loadObject();
-
+    console.log("after await");
     socket.setup();
+       
+    socket.addEventListener('/init', (args) => {
+        visual.init(args);
+    })
 
     socket.addEventListener('/user/enter', (id) => {
         console.log("New User");
@@ -32,10 +39,7 @@ async function setup()    {
         socket.send("/user/position", pos);
     })
 
-    setInterval(() =>{
-        // const pos = visual.getUserPosition();
-        // socket.send("/user/position", pos);
-
+    timer = setInterval(() =>{
         const rotation = visual.getUserRotation();
         socket.send("/user/rotation", rotation);
 
@@ -46,21 +50,29 @@ function update()   {
     visual.update();
 };
 
-function draw() {
+function draw() {    
     update();
     requestAnimationFrame(draw);
 
     visual.draw();
 }
 
-function main() {
-    setup();
+async function main() {
+    await setup();
+
+    console.log("Start drawing");
     draw();
 }
+
 
 function onWindowResize() {
     visual.onWindowResize();
 }
+
+window.addEventListener('beforeunload', (e) =>  {
+    clearInterval(timer);
+    socket.close();
+});
 
 document.addEventListener("DOMContentLoaded", main);
 window.addEventListener('resize', onWindowResize);

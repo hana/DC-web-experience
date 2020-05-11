@@ -13,7 +13,7 @@ export default class Socket {
         socket.on('connect', () => {
             console.log("Connection established");
             // socket.id;
-            socket.emit('/user/enter', socket.id);
+            // socket.emit('/user/enter', socket.id);
         });
     
         socket.on('/broadcast', (msg) => {
@@ -29,10 +29,11 @@ export default class Socket {
             socket.emit("/broadcast", socket.id);
         });
     
-        window.addEventListener('beforeunload', (e) => {
-            // e.preventDefault();
-            socket.emit('/user/leave', socket.id);
-        })
+
+    }
+
+    leave() {
+        socket.emit("/user/leave",socket.id);
     }
 
     send(adr, data) {
