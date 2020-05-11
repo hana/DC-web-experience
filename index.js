@@ -4,8 +4,6 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 
-
-
 let server;
 
 if(process.env.TARGET_ENV === 'production') {
@@ -24,8 +22,16 @@ app.use(express.static('static'));
 const helmet = require('helmet');
 app.use(helmet());
 
+//Gzip
+const compression = require('compression');
+app.use(compression());
+
 app.get("/", (req, res) => {
     res.sendFile(__dirname + '/views/index.html');
+});
+
+app.get("/face", (req, res) => {
+    res.sendFile(__dirname + '/views/face.html');
 });
 
 const Listen_Port = 53000;

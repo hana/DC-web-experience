@@ -27,9 +27,14 @@ async function setup()    {
         visual.setOtherUserRotation(mes.id, mes.x, mes.y, mes.z);
     })
 
-    setInterval(() =>{
+    visual.setOnMove(() => {
         const pos = visual.getUserPosition();
         socket.send("/user/position", pos);
+    })
+
+    setInterval(() =>{
+        // const pos = visual.getUserPosition();
+        // socket.send("/user/position", pos);
 
         const rotation = visual.getUserRotation();
         socket.send("/user/rotation", rotation);

@@ -6,7 +6,7 @@ import { PointerLockControls } from "./three/examples/jsm/controls/PointerLockCo
 import { MTLLoader } from "./three/examples/jsm/loaders/MTLLoader.js";
 import { OBJLoader2 } from "./three/examples/jsm/loaders/OBJLoader2.js";
 import { MtlObjBridge } from "./three/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js";
-import {GLTFLoader} from "./three/examples/jsm/loaders/GLTFLoader.js";
+// import {GLTFLoader} from "./three/examples/jsm/loaders/GLTFLoader.js";
 
 import Shape from './shape.js';
 
@@ -26,7 +26,9 @@ const move = {
     forward:false,
     backward:false,
     left:false,
-    right:false
+    right:false,
+    up:false,
+    down:false,
 }
 
 const others = {};
@@ -48,7 +50,7 @@ export default class Visual {
         renderer = new THREE.WebGLRenderer({
             antialias:false,
         });
-        renderer.setClearColor(0xAAAAAA);
+        renderer.setClearColor(0x111111);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
@@ -83,6 +85,14 @@ export default class Visual {
                 case 68: // d
                     move.right = true;
                     break;
+
+                case 82: //r
+                    move.up = true;
+                    break;
+
+                case 70: // f
+                    move.down = true;                    
+                    break;
                 default:
                     break;
             }    
@@ -109,28 +119,48 @@ export default class Visual {
                 case 68: // d
                     move.right = false;
                     break;
+                case 82: //r
+                    move.up = false;
+                    break;
+                case 70: // f
+                    move.down = false;                    
+                    break;
                 default:
                     break;
             }
         }, false);
 
         this.lights = new THREE.Group();
-        this.lights.add(new THREE.AmbientLight(0xfafafa));
-
-        let light = new THREE.DirectionalLight(0xC0C090);
-        light.position.set(5, 50, -100);
-        this.lights.add(light);
-
-        scene.add(this.lights);
+        this.lights.add(new THREE.AmbientLight(0x111111));
 
 
-        // setInterval(() => {console.log(scene)}, 3000);
+        /*
+            x: 30 ~ 1100
+            y: 140?
+            z: 100 ~ 300
+        */
+
+        const addLight = (x, y, z) => {
+            let light = new THREE.PointLight(0xFDFDFD, 1.0, 500);
+            light.position.set(x, y, z);
+            this.lights.add(light);
+        }
+
+        addLight(30, 140, 200);
+        addLight(330, 140, 200);
+        addLight(630, 140, 200);
+        addLight(930, 140, 200);
+        // addLight(830, 140, 200);
+        // addLight(1030, 140, 200);
+        // addLight(630, 140, 200);
+
+        scene.add(this.lights);        
     }
 
     loadObject() {
         return new Promise((resolve) =>{
             const objLoader2 = new OBJLoader2();
-        
+
             const callbackOnLoad = ( object3d ) => {
             
                 // object3d.traverse( function( node ) {
@@ -138,8 +168,11 @@ export default class Visual {
                 //         node.material.side = THREE.DoubleSide;
                 //     }
                 // });
+                
                 scene.add( object3d );        
                 console.log("Object loaded.");
+
+                document.getElementById("LoadingMessage").style.display="none";
                 resolve();
             };
         
@@ -161,25 +194,33 @@ export default class Visual {
         const time = performance.now();
         const delta = (time - prevTime) * 0.001;
     
-        velocity.x -= velocity.x * Delta_Mod * delta;
+        velocity.x -= velocity.x * Delta_Mod * delta;        
+        velocity.y -= velocity.y * Delta_Mod * delta;
         velocity.z -= velocity.z * Delta_Mod * delta;
-    
-        direction.z = Number(move.forward) - Number(move.backward);
+                    
         direction.x = Number(move.right) - Number(move.left);
+        direction.y = Number(move.down) - Number(move.up);
+        direction.z = Number(move.forward) - Number(move.backward);
         direction.normalize();
     
-        if(move.forward || move.backward)  velocity.z -= direction.z * Move_Mod * delta; 
+        
         if(move.left || move.right)  velocity.x -= direction.x * Move_Mod * delta; 
+        if(move.up || move.down)  velocity.y -= direction.y * Move_Mod * delta; 
+        if(move.forward || move.backward)  velocity.z -= direction.z * Move_Mod * delta; 
     
         controls.moveRight(-velocity.x * delta);
         controls.moveForward( -velocity.z * delta);
+        controls.getObject().position.y += ( velocity.y * delta ); // new behavior
+
+        if((move.forward || move.backward || move.left || move.right || move.up || move.down) && onMove) {
+           onMove(); 
+        }
     
         prevTime = time;
     }
 
     draw(){
-        renderer.render(scene, camera);
-        console.log(camera.position);
+        renderer.render(scene, camera);        
     };
 
     onWindowResize() {
@@ -207,7 +248,6 @@ export default class Visual {
             scene.remove(others[id].getObject());
             delete others[id];
         }
-
     }
 
     setOtherUserPosition(id, x, y, z)    {
@@ -219,10 +259,12 @@ export default class Visual {
     setOtherUserRotation(id, x, y, z)  {
         if(others[id])  {
             others[id].setRotation(x, y, z);
-        }
-        
+        }   
     }
 
-
+    setOnMove(func) {
+        onMove = func;
+        return true;
+    }
 }
 
