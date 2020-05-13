@@ -45,7 +45,7 @@ export default class Visual {
     setup(){
         scene = new THREE.Scene();
         
-        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1500);
         camera.position.set(0, 70, 250);
         camera.rotation.y = -Math.PI * 0.5;
         camera.zoom = 1.0;
