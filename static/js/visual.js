@@ -136,7 +136,7 @@ export default class Visual {
         }, false);
 
         this.lights = new THREE.Group();
-        this.lights.add(new THREE.AmbientLight(0x111111));
+        this.lights.add(new THREE.AmbientLight(0x222222));
 
 
         /*
@@ -146,15 +146,15 @@ export default class Visual {
         */
 
         const addLight = (x, y, z) => {
-            let light = new THREE.PointLight(0xFDFDFD, 0.5, 300);
+            let light = new THREE.PointLight(0xFDFDFD, 0.5, 500);
             light.position.set(x, y, z);
             this.lights.add(light);
         }
 
-        addLight(30, 140, 300);
-        addLight(330, 140, 300);
-        addLight(630, 140, 300);
-        addLight(930, 140, 300);
+        addLight(30, 120, 200);
+        addLight(330, 120, 200);
+        addLight(630, 120, 200);
+        addLight(930, 120, 200);
         // addLight(830, 140, 200);
         // addLight(1030, 140, 200);
         // addLight(630, 140, 200);
