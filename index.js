@@ -35,10 +35,12 @@ app.get("/face", (req, res) => {
     res.sendFile(__dirname + '/views/face.html');
 });
 
+app.get("/trigger", (req, res) => {
+    res.sendFile(__dirname + '/views/trigger.html');
+});
 
 const Listen_Port = 53000;
 const users = {}; 
-
 
 io.on('connection', (socket) => {
     const Client_ID = String(socket.id);
@@ -100,6 +102,10 @@ io.on('connection', (socket) => {
         }
         socket.broadcast.emit("/user/rotation", data);
     });
+
+    socket.on('/user/walk', (data) => {
+        socket.broadcast.emit("/user/walk", data);
+    })
 
 
     socket.on('disconnect', () => {

@@ -32,6 +32,10 @@ export default class Socket {
 
     }
 
+    close() {
+        socket.close();
+    }
+
     leave() {
         socket.emit("/user/leave",socket.id);
     }

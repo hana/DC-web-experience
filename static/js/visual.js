@@ -13,14 +13,19 @@ import Shape from './shape.js';
 const modelName = "cooperHewitt"
 const Path_To_OBJ = './src/cooperHewitt.obj';
 const Path_To_MTL = './src/cooperHewitt.mtl';
+const Walk_Trigger_Interval = 750;
 
 let scene, renderer, camera, controls;
 
 let prevTime = performance.now();
+
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 
 let onMove = null;
+
+let prevWalk = performance.now();
+let onWalk = null;
 
 const move = {
     forward:false,
@@ -141,7 +146,7 @@ export default class Visual {
         */
 
         const addLight = (x, y, z) => {
-            let light = new THREE.PointLight(0xFDFDFD, 1.0, 500);
+            let light = new THREE.PointLight(0xFDFDFD, 0.5, 300);
             light.position.set(x, y, z);
             this.lights.add(light);
         }
@@ -162,7 +167,7 @@ export default class Visual {
             const objLoader2 = new OBJLoader2();
 
             const callbackOnLoad = ( object3d ) => {
-            
+                document.getElementById("progress").innerText = "Done.";
                 // object3d.traverse( function( node ) {
                 //     if( node.material ) {
                 //         node.material.side = THREE.DoubleSide;
@@ -175,12 +180,18 @@ export default class Visual {
                 document.getElementById("LoadingMessage").style.display="none";
                 resolve();
             };
+
+            const onProgress = (xhr) => {
+                const progress = Math.round(xhr.loaded / xhr.total * 100);
+                const text = `Loading... ${progress} % loaded`
+                document.getElementById("progress").innerText = text;
+            }
         
             const onLoadMtl = ( mtlParseResult ) =>{
                 objLoader2.setModelName( modelName );
                 // objLoader2.setLogging( true, true );
                 objLoader2.addMaterials( MtlObjBridge.addMaterialsFromMtlLoader( mtlParseResult ), true );
-                objLoader2.load(Path_To_OBJ, callbackOnLoad, null, null, null );
+                objLoader2.load(Path_To_OBJ, callbackOnLoad, onProgress, null, null );
             };
             const mtlLoader = new MTLLoader();
             mtlLoader.load( Path_To_MTL, onLoadMtl );
@@ -213,7 +224,13 @@ export default class Visual {
         controls.getObject().position.y += ( velocity.y * delta ); // new behavior
 
         if((move.forward || move.backward || move.left || move.right || move.up || move.down) && onMove) {
-           onMove(); 
+            onMove(); 
+            
+            const diff = (time - prevWalk)
+            if( onWalk && Walk_Trigger_Interval < diff) {            
+                onWalk();                
+                prevWalk = time;
+           }
         }
     
         prevTime = time;
@@ -231,7 +248,6 @@ export default class Visual {
     }
 
     init(args) {
-        
         for(let key in args)   {
             const user = args[key];
             console.log(user.position);
@@ -240,6 +256,13 @@ export default class Visual {
             others[user.id].setRotation(user.rotation.x, user.rotation.y, user.rotation.z);
             scene.add(others[user.id].getObject());
         }
+    }
+
+    addUser(user)   {
+        others[user.id] = new Shape();
+        others[user.id].setPosition(user.position.x, user.position.y, user.position.z);
+        others[user.id].setRotation(user.rotation.x, user.rotation.y, user.rotation.z);
+        scene.add(others[user.id].getObject());
     }
 
     getUserPosition()   {
@@ -276,6 +299,11 @@ export default class Visual {
 
     setOnMove(func) {
         onMove = func;
+        return true;
+    }
+
+    setOnWalk(func) {
+        onWalk = func;
         return true;
     }
 }
