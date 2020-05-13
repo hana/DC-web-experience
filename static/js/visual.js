@@ -98,6 +98,10 @@ export default class Visual {
                 case 70: // f
                     move.down = true;                    
                     break;
+                case 32: // space
+                    camera.position.set(0, 70, 250);    // reset position
+                    camera.rotation.y = -Math.PI * 0.5; 
+                    break;
                 default:
                     break;
             }    
