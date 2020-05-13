@@ -151,10 +151,10 @@ export default class Visual {
             this.lights.add(light);
         }
 
-        addLight(30, 140, 200);
-        addLight(330, 140, 200);
-        addLight(630, 140, 200);
-        addLight(930, 140, 200);
+        addLight(30, 140, 300);
+        addLight(330, 140, 300);
+        addLight(630, 140, 300);
+        addLight(930, 140, 300);
         // addLight(830, 140, 200);
         // addLight(1030, 140, 200);
         // addLight(630, 140, 200);
