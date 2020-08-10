@@ -187,7 +187,7 @@ export default class Visual {
 
             const onProgress = (xhr) => {
                 const progress = Math.round(xhr.loaded / xhr.total * 100);
-                const text = `Loading... ${progress} % loaded`
+                const text = `Loading... ${progress} %`
                 document.getElementById("progress").innerText = text;
             }
         

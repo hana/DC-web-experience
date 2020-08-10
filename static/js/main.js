@@ -12,7 +12,6 @@ async function setup()    {
     sound.setup();
     visual.setup();
     await visual.loadObject();
-    console.log("after await");
     socket.setup();
     
        
