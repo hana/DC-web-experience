@@ -1,6 +1,9 @@
 'use strict';
 require('dotenv').config();
 
+const Listen_Port = 53231;
+const users = {}; 
+
 const fs = require('fs');
 const express = require('express');
 const app = express();
@@ -39,8 +42,7 @@ app.get("/trigger", (req, res) => {
     res.sendFile(__dirname + '/views/trigger.html');
 });
 
-const Listen_Port = 53000;
-const users = {}; 
+
 
 io.on('connection', (socket) => {
     const Client_ID = String(socket.id);
